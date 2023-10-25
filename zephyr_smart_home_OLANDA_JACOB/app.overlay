@@ -1,0 +1,17 @@
+/{
+    chosen {
+        zephyr,console = &uart0;
+    };
+
+    leds{
+        compatible = "gpio-leds";
+        ledyellow: led_yellow{
+            gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
+            label = "LED 0";
+        };
+    };
+
+    aliases {
+        led-yellow = &ledyellow;
+    };
+};
