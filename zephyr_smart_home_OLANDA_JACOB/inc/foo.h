@@ -1,0 +1,8 @@
+//
+// Created by seatech on 25/10/23.
+//
+
+#ifndef ZEPHYR_SMART_HOME_OLANDA_JACOB_FOO_H
+#define ZEPHYR_SMART_HOME_OLANDA_JACOB_FOO_H
+
+#endif //ZEPHYR_SMART_HOME_OLANDA_JACOB_FOO_H
