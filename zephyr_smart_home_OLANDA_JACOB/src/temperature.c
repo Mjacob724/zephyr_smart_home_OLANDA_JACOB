@@ -17,15 +17,18 @@ void main(void)
     {
         struct sensor_value temp, humidity;
 
-        if (sensor_sample_fetch(dth11) < 0) {
+        if (sensor_sample_fetch(dth11) < 0)
+        {
             printk("Échec de l'échantillonnage du capteur DTH11\n");
         }
 
-        if (sensor_channel_get(dth11, SENSOR_CHAN_TEMP, &temp) < 0) {
+        if (sensor_channel_get(dth11, SENSOR_CHAN_TEMP, &temp) < 0)
+        {
             printk("Échec de récupération de la température\n");
         }
 
-        if (sensor_channel_get(dth11, SENSOR_CHAN_HUMIDITY, &humidity) < 0) {
+        if (sensor_channel_get(dth11, SENSOR_CHAN_HUMIDITY, &humidity) < 0)
+        {
             printk("Échec de récupération de l'humidité\n");
         }
 
