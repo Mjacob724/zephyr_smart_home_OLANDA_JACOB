@@ -18,9 +18,11 @@
     dht11: dth11
         {
             compatible = "aosong,dht";
-            statut = "ok";
+
             dio-gpios = <&gpio0 17  GPIO_ACTIVE_LOW>;
-            label = "XHT11";
+            dth11: temp_cap{
+                label = "XHT11";
+            };
         };
 
 
