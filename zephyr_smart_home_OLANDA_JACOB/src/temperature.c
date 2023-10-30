@@ -7,12 +7,14 @@ void main(void)
     const struct device *dth11;
 
     dth11 = device_get_binding("DTH11_GPIO");
-    if (!dth11) {
+    if (!dth11)
+    {
         printk("Capteur DTH11 non trouvé.\n");
         return;
     }
 
-    while (1) {
+    while (1)
+    {
         struct sensor_value temp, humidity;
 
         if (sensor_sample_fetch(dth11) < 0) {
@@ -33,7 +35,7 @@ void main(void)
         printk("Température : %.2f °C\n", temperature);
         printk("Humidité : %.2f %%\n", humidite);
 
-        k_sleep(K_SECONDS(10)); // Attendez 10 secondes avant de récupérer les données à nouveau
+        k_sleep(K_SECONDS(10));
     }
 }
 
