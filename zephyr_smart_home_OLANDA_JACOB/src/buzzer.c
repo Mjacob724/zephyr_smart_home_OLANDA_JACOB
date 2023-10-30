@@ -79,10 +79,68 @@ void create_buzzer_thread(void)
                                        buzzer_thread_fn, NULL, NULL, NULL,
                                        CONFIG_BEEPER_THREAD_PRIORITY, 0, K_NO_WAIT);
 }
+
+
+static int buzzer_on = 0;
+
 void button_callback(const struct device *dev, struct gpio_callback *cb, u32_t pins)
 {
-    // Activer/désactiver le buzzer en réponse à l'appui sur le bouton
+    buzzer_on = !buzzer_on;
+    const struct device *pwm_dev = device_get_binding(BUZZER_PWM_CONTROLLER);
+    if (!pwm_dev) {
+        printk("PWM non trouvé.\n");
+        return;
+    }
+
+    if (buzzer_on)
+    {
+        pwm_pin_set_cycles(pwm_dev, BUZZER_PWM_CHANNEL, 0, 1000, 0);
+    } else
+    {
+        pwm_pin_set_cycles(pwm_dev, BUZZER_PWM_CHANNEL, 0, 0, 0);
+    }
 }
+
+void main(void)
+{
+    const struct device *button_dev;
+    const struct device *pwm_dev;
+    button_dev = device_get_binding("BUTTON_GPIO");
+    if (!button_dev) {
+        printk("Button GPIO non trouvé.\n");
+        return;
+    }
+
+    gpio_init_callback(&button_cb, button_callback, BIT(0));
+    gpio_add_callback(button_dev, &button_cb);
+    gpio_pin_configure(button_dev, 0, GPIO_INPUT | GPIO_INT_DEBOUNCE | GPIO_INT_EDGE | GPIO_ACTIVE_HIGH);
+    gpio_pin_enable_callback(button_dev, 0);
+    pwm_dev = device_get_binding(BUZZER_PWM_CONTROLLER);
+
+    if (!pwm_dev)
+    {
+        printk("PWM non trouvé.\n");
+        return;
+    }
+
+        pwm_pin_set_cycles(pwm_dev, BUZZER_PWM_CHANNEL, 0, 0, 0);
+        pwm_pin_set_period(pwm_dev, BUZZER_PWM_CHANNEL, 0,200,0);
+        pwm_pin_set_duty_cycle(pwm_dev, BUZZER_PWM_CHANNEL, 0,0,0);
+        pwm_pin_start(pwm_dev, BUZZER_PWM_CHANNEL);
+
+        k_thread_create(&buzzer_thread, buzzer_thread_stack, K_THREAD_STACK_SIZEOF(buzzer_thread_stack),
+                        buzzer_thread_fn, NULL, NULL, NULL, CONFIG_BEEPER_THREAD_PRIORITY, 0, K_NO_WAIT);
+
+        while (1) {
+            k_sleep(K_FOREVER);
+        }
+    }
+
+    while (1) {
+        k_sleep(K_FOREVER);
+    }
+}
+
 
 struct gpio_callback button_cb;
 
