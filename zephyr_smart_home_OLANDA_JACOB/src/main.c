@@ -13,7 +13,8 @@
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
 
-int main(void){
+int main(void)
+{
     gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
     // Init device
     init_lcd(&dev_lcd_screen);
