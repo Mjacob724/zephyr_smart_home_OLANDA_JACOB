@@ -21,7 +21,7 @@ void init_buzzer_gpio(void)
     gpio_pin_set(buzzer_dev, 25, 0);
 }
 
-
+/*
 void init_buzzer_pwm(void)
 {
     const struct device *pwm_dev;
@@ -138,7 +138,6 @@ void main(void)
 
 }
 
-
 struct gpio_callback button_cb;
 
 void init_button(void)
@@ -156,3 +155,5 @@ void init_button(void)
     gpio_pin_configure(button_dev, 0, GPIO_INPUT | GPIO_INT_DEBOUNCE | GPIO_INT_EDGE | GPIO_ACTIVE_HIGH);
     gpio_pin_enable_callback(button_dev, 0);
 }
+*/
+
