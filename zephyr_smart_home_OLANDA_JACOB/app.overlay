@@ -11,8 +11,10 @@
         };
     };
 
+
     aliases {
         led-yellow = &ledyellow;
+        afficheur-lcd = &afficheur;
     };
 
     dht11: dth11
@@ -24,6 +26,11 @@
                 label = "XHT11";
             };
         };
+};
 
-
+&i2c0 {
+	afficheur: afficheur_lcd@27 {
+		compatible = "i2c-device";
+		reg = <0x27>;
+	};
 };
