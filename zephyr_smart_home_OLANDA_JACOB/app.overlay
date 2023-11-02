@@ -19,7 +19,7 @@
     };
 
 
-    buzzers{
+    buzzer{
         compatible = "gpio-buzzers";
         buzzer: buzzer{
             gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
