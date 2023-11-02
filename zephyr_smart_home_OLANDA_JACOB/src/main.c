@@ -11,10 +11,12 @@
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
+#define TEMP_NODE DT_ALIAS(capteur_temp)
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
-const struct i2c_dt_spec capteur_temp = I2C_DT_SPEC_GET(TEMP_NODE);
+const struct gpio_dt_spec capteur_temp_gpio = GPIO_DT_SPEC_GET_OR(TEMP_NODE, gpios, {0});
+
 void error(void);
 
 int main(void)
@@ -64,7 +66,8 @@ int main(void)
     }
 }
 
-void error(){
+void error()
+{
     while(1)
     {
         printk("Capteur DTH11 non trouvé.\n");
