@@ -36,7 +36,7 @@ void main(void)
         double humidite = sensor_value_to_double(&humidity);
 
         printk("Température : %.2f °C\n", temperature);
-        printk(" : %.2f %%\n", humidite);
+        printk("Humidite : %.2f %%\n", humidite);
 
         k_sleep(K_SECONDS(10));
     }
