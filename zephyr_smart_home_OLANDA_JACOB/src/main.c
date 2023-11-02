@@ -15,7 +15,7 @@
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
 const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
-
+void button_callback(struct device *dev, struct gpio_callback *cb, u32_t pins);
 void error(void);
 
 
@@ -76,5 +76,15 @@ void error()
     while(1)
     {
         printk("Capteur DTH11 non trouvé.\n");
+    }
+}
+
+void button_callback(struct device *dev, struct gpio_callback *cb, u32_t pins)
+{
+    if (pins & BIT(BUTTON1_PIN)) {
+        printk("Bouton 1 appuyé\n");
+    }
+    if (pins & BIT(BUTTON2_PIN)) {
+        printk("Bouton 2 appuyé\n");
     }
 }
