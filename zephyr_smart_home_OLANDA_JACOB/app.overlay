@@ -27,7 +27,7 @@
         };
     };
 
-    button1: button1
+    buttons: buttons
     {
             compatible = "gpio-keys";
             button0: button_0
@@ -35,19 +35,13 @@
                     gpios = <&gpio0 16 GPIO_PULL_UP>;
                     label = "Button1";
             };
-
-
-    };
-    button2: button2
-    {
-                  compatible = "gpio-keys";
-                  button1: button_1
-                  {
+            button1: button_1
+            {
                           gpios = <&gpio0 27 GPIO_PULL_UP>;
                           label = "Button2";
                   };
+    };
 
-          };
 
 
     aliases {
