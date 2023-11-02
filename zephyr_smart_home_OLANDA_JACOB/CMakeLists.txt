@@ -4,4 +4,5 @@ find_package(Zephyr REQUIRED HINTS
 project(zephyr_smart_home_OLANDA_JACOB)
 target_sources(app PRIVATE
         src/main.c
+        src/lcd_screen_i2c.c
 )
