@@ -4,7 +4,7 @@
 #include <drivers/gpio.h>
 #include <drivers/pwm.h>
 
-#define PERIOD_INIT    1500
+#define PERIOD_INIT 1500
 
 #define BUZZER_NODE DT_ALIAS(buzzer)
 
@@ -45,7 +45,6 @@ void init_buzzer_gpio(void)
             pwm_pin_set_usec(pwm, PWM_CHANNEL, period, 0, 0);
             k_sleep(PAUSE_DURATION);
         }
-
         return 0;
     }
 }
