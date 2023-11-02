@@ -11,13 +11,13 @@
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
-#define TEMP_NODE DT_ALIAS(capteur_temp)
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
-const struct gpio_dt_spec capteur_temp_gpio = GPIO_DT_SPEC_GET_OR(TEMP_NODE, gpios, {0});
+const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
 
 void error(void);
+
 
 int main(void)
 {
@@ -29,38 +29,43 @@ int main(void)
     write_lcd(&dev_lcd_screen, HELLO_MSG, LCD_LINE_1);
     write_lcd(&dev_lcd_screen, ZEPHYR_MSG, LCD_LINE_2);
 
-    const struct device *dth11;
-
-    dth11 = device_get_binding("DTH11_GPIO");
-    if (!dth11)
+    if (!dht11)
     {
         error();
     }
 
     while (1)
     {
-        struct sensor_value temp, humidity;
+        struct sensor_value temp, humidity, press;
 
-        if (sensor_sample_fetch(dth11) < 0)
+        if (sensor_sample_fetch(dht11) < 0)
         {
             printk("Échec de l'échantillonnage du capteur DTH11\n");
         }
 
-        if (sensor_channel_get(dth11, SENSOR_CHAN_AMBIENT_TEMP, &temp) < 0)
+        if (sensor_channel_get(dht11, SENSOR_CHAN_AMBIENT_TEMP, &temp) < 0)
         {
             printk("Échec de récupération de la température\n");
         }
 
-        if (sensor_channel_get(dth11, SENSOR_CHAN_HUMIDITY, &humidity) < 0)
+        if (sensor_channel_get(dht11, SENSOR_CHAN_HUMIDITY, &humidity) < 0)
         {
             printk("Échec de récupération de l'humidité\n");
         }
 
-        double temperature = sensor_value_to_double(&temp);
-        double humidite = sensor_value_to_double(&humidity);
+        if (sensor_channel_get(dht11, SENSOR_CHAN_PRESS, &press) < 0)
+        {
+            printk("Échec de récupération de la pression\n");
+        }
 
-        printk("Température : %.2f °C\n", temperature);
-        printk("Humidite : %.2f %%\n", humidite);
+        sensor_sample_fetch(dht11);
+        sensor_channel_get(dht11,SENSOR_CHAN_AMBIENT_TEMP,&temp);
+        sensor_channel_get(dht11,SENSOR_CHAN_HUMIDITY,&humidity);
+        sensor_channel_get(dht11,SENSOR_CHAN_PRESS,&press);
+
+        printk("temp: %d.%06d; press: %d.%06d; humidity: %d.%06d\n",
+               temp.val1, temp.val2, press.val1, press.val2,
+               humidity.val1, humidity.val2);
 
         k_sleep(K_SECONDS(10));
     }
