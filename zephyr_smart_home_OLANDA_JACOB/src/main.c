@@ -11,11 +11,13 @@
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
+#define BUTTON1_PIN 16
+#define BUTTON2_PIN 27
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
 const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
-
+void button_callback(struct device *dev, struct gpio_callback *cb);
 void error(void);
 
 
@@ -33,6 +35,29 @@ int main(void)
     {
         error();
     }
+
+    struct device *gpio_dev;
+    struct gpio_callback button_cb;
+
+    gpio_dev = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
+
+    if (!gpio_dev)
+    {
+        printk("Impossible de récupérer le périphérique GPIO\n");
+    }
+
+    // Configurez les broches
+    gpio_pin_configure(gpio_dev, BUTTON1_PIN, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, BUTTON2_PIN, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+
+    // Configurez la gestion des interruptions
+    gpio_init_callback(&button_cb, gpio_callback, BIT(BUTTON1_PIN) | BIT(BUTTON2_PIN));
+    gpio_add_callback(gpio_dev, &button_cb);
+
+    // Activez les interruptions
+    gpio_pin_interrupt_configure(gpio_dev, BUTTON1_PIN, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, BUTTON2_PIN, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+
 
     while (1)
     {
@@ -67,8 +92,24 @@ int main(void)
                temp.val1, temp.val2, press.val1, press.val2,
                humidity.val1, humidity.val2);
 
+
+
+        if (gpio_pin_get(gpio_dev, BUTTON1_PIN)) {
+            printk("Bouton 1 relâché\n");
+        } else {
+            printk("Bouton 1 appuyé\n");
+        }
+
+        if (gpio_pin_get(gpio_dev, BUTTON2_PIN)) {
+            printk("Bouton 2 relâché\n");
+        } else {
+            printk("Bouton 2 appuyé\n");
+        }
+
         k_sleep(K_SECONDS(10));
     }
+
+
 }
 
 void error()
@@ -76,5 +117,26 @@ void error()
     while(1)
     {
         printk("Capteur DTH11 non trouvé.\n");
+    }
+}
+
+void gpio_callback(struct device *dev, struct gpio_callback *cb)
+{
+    if (BUTTON1_PIN == 1)
+    {
+        printk("Bouton 1 appuyé\n");
+    }
+    else
+    {
+        printk("Bouton 1 pas appuyé\n");
+    }
+
+    if (BUTTON2_PIN == 1)
+    {
+        printk("Bouton 2 appuyé\n");
+    }
+    else
+    {
+        printk("Bouton 2 pas appuyé\n");
     }
 }
