@@ -30,6 +30,6 @@ struct i2c_dt_spec;
 
 void init_lcd(const struct i2c_dt_spec *_dev_lcd_screen);
 void write_lcd(const struct i2c_dt_spec *dev_lcd_screen, const char *msg, uint8_t line);
-void write_lcd_clear(const struct i2c_dt_spec *dev_lcd_screen, const char *msg, uint8_t line);
+//void write_lcd_clear(const struct i2c_dt_spec *dev_lcd_screen, const char *msg, uint8_t line);
 
 #endif // INC_LDC_SCREEN_I2C_H_

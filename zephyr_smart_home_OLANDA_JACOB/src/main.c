@@ -21,5 +21,5 @@ int main(void)
 
     // Display a message
     write_lcd(&dev_lcd_screen, HELLO_MSG, LCD_LINE_1);
-    write_lcd_clear(&dev_lcd_screen, ZEPHYR_MSG, LCD_LINE_2);
+    write_lcd(&dev_lcd_screen, ZEPHYR_MSG, LCD_LINE_2);
 }
