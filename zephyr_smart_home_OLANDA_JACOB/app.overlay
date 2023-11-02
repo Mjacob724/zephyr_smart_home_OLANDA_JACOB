@@ -16,16 +16,6 @@
         led-yellow = &ledyellow;
         afficheur-lcd = &afficheur;
     };
-
-    dht11: dth11
-        {
-            compatible = "aosong,dht";
-
-            dio-gpios = <&gpio0 17  GPIO_ACTIVE_LOW>;
-            dth11: temp_cap{
-                label = "XHT11";
-            };
-        };
 };
 
 &i2c0 {
