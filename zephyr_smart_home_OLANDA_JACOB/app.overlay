@@ -11,23 +11,21 @@
         };
     };
 
-dht11: dht11 {
-            compatible = "aosong,dht";
-            status = "okay";
-            dio-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
-            label = "XHT11";
+    dht11: dht11 {
+        compatible = "aosong,dht";
+        status = "okay";
+        dio-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
+        label = "XHT11";
+    };
+
+
+    buzzers{
+        compatible = "gpio-buzzers";
+        buzzer: buzzer{
+            gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+            label = "LED 0";
         };
-
-
-    buzzer: buzzer
-    {
-            compatible = "aosong,dht";
-
-            dio-gpios = <&gpio0 17  GPIO_ACTIVE_LOW>;
-            dth11: temp_cap{
-                label = "XHT11";
-            };
-        };
+    };
 
     button1: button1
     {
