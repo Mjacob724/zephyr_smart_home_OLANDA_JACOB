@@ -20,7 +20,6 @@
     dht11: dth11
         {
             compatible = "aosong,dht";
-
             dio-gpios = <&gpio0 17  GPIO_ACTIVE_LOW>;
             dth11: temp_cap{
                 label = "XHT11";
@@ -28,9 +27,34 @@
         };
 };
 
-&i2c0 {
-	afficheur: afficheur_lcd@27 {
-		compatible = "i2c-device";
-		reg = <0x27>;
-	};
-};
+    &i2c0 {
+        afficheur: afficheur_lcd@27 {
+            compatible = "i2c-device";
+            reg = <0x27>;
+        };
+    };
+
+    fragment@0
+    {
+            target = <&gpio0>;
+            __overlay__ {
+                button1: button1 {
+                    pins = <16>;
+                    label = "button1";
+                    gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+                    debounce-pin-delay = <100000>;
+                    interrupt-parent = <&gpio0>;
+                    interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
+                };
+
+                button2: button2 {
+                    pins = <27>;
+                    label = "button2";
+                    gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;
+                    debounce-pin-delay = <100000>;
+                    interrupt-parent = <&gpio0>;
+                    interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
+                };
+            };
+        };
+
