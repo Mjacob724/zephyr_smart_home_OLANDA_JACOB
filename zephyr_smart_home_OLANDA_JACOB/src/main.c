@@ -11,12 +11,12 @@
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
-#define BUTTON (buttons)
+#define BUTTON_NODE DT_ALIAS(buttons)
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
 const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
-const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(BUTTON_NODE, gpios, {0});
+const struct gpio_dt_spec button_gpio = GPIO_DT_SPEC_GET_OR(BUTTON_NODE, gpios, {0});
 
 void button_callback(struct device *dev, struct gpio_callback *cb);
 void error(void);

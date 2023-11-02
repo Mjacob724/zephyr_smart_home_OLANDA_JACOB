@@ -9,12 +9,14 @@
 #define BUTTON1_PIN 16
 #define BUTTON2_PIN 27
 
-void button_callback(struct device *dev, struct gpio_callback *cb, u32_t pins)
+void button_callback(struct device *dev, struct gpio_callback *cb)
 {
-    if (pins & BIT(BUTTON1_PIN)) {
+    if (button_0)
+    {
         printk("Bouton 1 appuyé\n");
     }
-    if (pins & BIT(BUTTON2_PIN)) {
+    if (button_1)
+    {
         printk("Bouton 2 appuyé\n");
     }
 }
@@ -32,26 +34,26 @@ void main(void)
     }
 
     // Configurez les broches
-    gpio_pin_configure(gpio_dev, BUTTON1_PIN, GPIO_DIR_IN | GPIO_INT | GPIO_PUD_PULL_UP | GPIO_INT_EDGE);
-    gpio_pin_configure(gpio_dev, BUTTON2_PIN, GPIO_DIR_IN | GPIO_INT | GPIO_PUD_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_0, GPIO_DIR_IN | GPIO_INT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_1, GPIO_DIR_IN | GPIO_INT | GPIO_PULL_UP | GPIO_INT_EDGE);
 
     // Configurez la gestion des interruptions
-    gpio_init_callback(&button_cb, button_callback, BIT(BUTTON1_PIN) | BIT(BUTTON2_PIN));
+    gpio_init_callback(&button_cb, button_callback, BIT(button_0) | BIT(button_1));
     gpio_add_callback(gpio_dev, &button_cb);
 
     // Activez les interruptions
-    gpio_pin_interrupt_configure(gpio_dev, BUTTON1_PIN, GPIO_INT_EDGE | GPIO_INT_ACTIVE_LOW);
-    gpio_pin_interrupt_configure(gpio_dev, BUTTON2_PIN, GPIO_INT_EDGE | GPIO_INT_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_0, GPIO_INT_EDGE | GPIO_INT_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_1, GPIO_INT_EDGE | GPIO_INT_ACTIVE_LOW);
 
     while (1)
     {
-        if (gpio_pin_get(gpio_dev, BUTTON1_PIN)) {
+        if (gpio_pin_get(gpio_dev, button_0)) {
             printk("Bouton 1 relâché\n");
         } else {
             printk("Bouton 1 appuyé\n");
         }
 
-        if (gpio_pin_get(gpio_dev, BUTTON2_PIN)) {
+        if (gpio_pin_get(gpio_dev, button_1)) {
             printk("Bouton 2 relâché\n");
         } else {
             printk("Bouton 2 appuyé\n");
