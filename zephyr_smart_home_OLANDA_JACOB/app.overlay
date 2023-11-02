@@ -48,8 +48,8 @@
         led-yellow = &ledyellow;
         afficheur-lcd = &afficheur;
         capteur-temp = &dht11;
-        button0 = &button0;
-        button1 = &button1;
+        button1 = &button0;
+        button2 = &button1;
         buzzer = &buzzer;
     };
 };

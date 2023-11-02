@@ -24,12 +24,8 @@ const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpio
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
 
 void error(void);
-
-
-void gpio_callback()
-{
-    printk("Bouton  appuyé\n");
-}
+void gpio_callback_1();
+void gpio_callback_2();
 
 int main(void)
 {
@@ -46,20 +42,22 @@ int main(void)
         error();
     }
 
-    struct gpio_callback button_cb;
-
+    struct gpio_callback button_1;
+    struct gpio_callback button_2;
 
     // Configurez les broches
     gpio_pin_configure(button_gpio1.port, button_gpio1.pin, GPIO_INPUT );
-    //gpio_pin_configure(button_gpio2.port, button_gpio2.pin, GPIO_INPUT );
-
     // Configurez la gestion des interruptions
-    gpio_init_callback(&button_cb, gpio_callback, BIT(button_gpio1.pin) );
-    gpio_add_callback(button_gpio1.port, &button_cb);
-
+    gpio_init_callback(&button_1, gpio_callback_1, BIT(button_gpio1.pin) );
+    gpio_add_callback(button_gpio1.port, &button_1);
     // Activez les interruptions
     gpio_pin_interrupt_configure_dt(&button_gpio1, GPIO_INT_EDGE_BOTH);
-  //  gpio_pin_interrupt_configure(button_gpio2.port, button_gpio2.pin, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+
+
+    gpio_pin_configure(button_gpio2.port, button_gpio2.pin, GPIO_INPUT );
+    gpio_init_callback(&button_2, gpio_callback_2, BIT(button_gpio2.pin) );
+    gpio_add_callback(button_gpio2.port, &button_2);
+    gpio_pin_interrupt_configure_dt(&button_gpio2, GPIO_INT_EDGE_BOTH);
 
 
     while (1)
@@ -105,4 +103,14 @@ void error()
     {
         printk("Capteur DTH11 non trouvé.\n");
     }
+}
+
+void gpio_callback_1()
+{
+    printk("Bouton 1 appuyé\n");
+}
+
+void gpio_callback_2()
+{
+    printk("Bouton 2 appuyé\n");
 }
