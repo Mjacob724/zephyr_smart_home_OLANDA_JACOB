@@ -48,16 +48,16 @@ int main(void)
     }
 
     // Configurez les broches
-    gpio_pin_configure(gpio_dev, BUTTON1_PIN, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
-    gpio_pin_configure(gpio_dev, BUTTON2_PIN, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_0, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_1, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
 
     // Configurez la gestion des interruptions
-    gpio_init_callback(&button_cb, gpio_callback, BIT(BUTTON1_PIN) | BIT(BUTTON2_PIN));
+    gpio_init_callback(&button_cb, gpio_callback, BIT(button_0) | BIT(button_1));
     gpio_add_callback(gpio_dev, &button_cb);
 
     // Activez les interruptions
-    gpio_pin_interrupt_configure(gpio_dev, BUTTON1_PIN, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
-    gpio_pin_interrupt_configure(gpio_dev, BUTTON2_PIN, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_0, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_1, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
 
 
     while (1)
@@ -95,13 +95,13 @@ int main(void)
 
 
 
-        if (gpio_pin_get(gpio_dev, BUTTON1_PIN)) {
+        if (gpio_pin_get(gpio_dev, button_0)) {
             printk("Bouton 1 relâché\n");
         } else {
             printk("Bouton 1 appuyé\n");
         }
 
-        if (gpio_pin_get(gpio_dev, BUTTON2_PIN)) {
+        if (gpio_pin_get(gpio_dev, button_1)) {
             printk("Bouton 2 relâché\n");
         } else {
             printk("Bouton 2 appuyé\n");
@@ -121,7 +121,7 @@ void error()
 
 void gpio_callback(struct device *dev, struct gpio_callback *cb)
 {
-    if (BUTTON1_PIN == 1)
+    if (button_1 == 1)
     {
         printk("Bouton 1 appuyé\n");
     }
@@ -130,7 +130,7 @@ void gpio_callback(struct device *dev, struct gpio_callback *cb)
         printk("Bouton 1 pas appuyé\n");
     }
 
-    if (BUTTON2_PIN == 1)
+    if (button_1 == 1)
     {
         printk("Bouton 2 appuyé\n");
     }
