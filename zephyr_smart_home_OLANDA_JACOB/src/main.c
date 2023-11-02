@@ -11,12 +11,18 @@
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
-#define BUTTON_NODE DT_ALIAS(buttons)
+#define BUTTON_NODE_1 DT_ALIAS(button1)
+#define BUTTON_NODE_2 DT_ALIAS(button2)
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
+
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
+
 const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
-const struct gpio_dt_spec button_gpio = GPIO_DT_SPEC_GET_OR(BUTTON_NODE, gpios, {0});
+
+const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
+const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
+
 
 void button_callback(struct device *dev, struct gpio_callback *cb);
 void error(void);
@@ -48,16 +54,16 @@ int main(void)
     }
 
     // Configurez les broches
-    gpio_pin_configure(gpio_dev, button_0, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
-    gpio_pin_configure(gpio_dev, button_1, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_gpio1, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
+    gpio_pin_configure(gpio_dev, button_gpio2, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
 
     // Configurez la gestion des interruptions
     gpio_init_callback(&button_cb, gpio_callback, BIT(button_0) | BIT(button_1));
     gpio_add_callback(gpio_dev, &button_cb);
 
     // Activez les interruptions
-    gpio_pin_interrupt_configure(gpio_dev, button_0, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
-    gpio_pin_interrupt_configure(gpio_dev, button_1, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_gpio1, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+    gpio_pin_interrupt_configure(gpio_dev, button_gpio2, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
 
 
     while (1)
@@ -95,13 +101,15 @@ int main(void)
 
 
 
-        if (gpio_pin_get(gpio_dev, button_0)) {
+        if (gpio_pin_get(gpio_dev, button_gpio1))
+        {
             printk("Bouton 1 relâché\n");
         } else {
             printk("Bouton 1 appuyé\n");
         }
 
-        if (gpio_pin_get(gpio_dev, button_1)) {
+        if (gpio_pin_get(gpio_dev, button_gpio2))
+        {
             printk("Bouton 2 relâché\n");
         } else {
             printk("Bouton 2 appuyé\n");
@@ -121,7 +129,7 @@ void error()
 
 void gpio_callback(struct device *dev, struct gpio_callback *cb)
 {
-    if (button_1 == 1)
+    if (button_gpio1 == 1)
     {
         printk("Bouton 1 appuyé\n");
     }
@@ -130,7 +138,7 @@ void gpio_callback(struct device *dev, struct gpio_callback *cb)
         printk("Bouton 1 pas appuyé\n");
     }
 
-    if (button_1 == 1)
+    if (button_gpio2 == 1)
     {
         printk("Bouton 2 appuyé\n");
     }
