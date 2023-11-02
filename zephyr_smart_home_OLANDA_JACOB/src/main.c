@@ -109,8 +109,6 @@ int main(void)
 
         k_sleep(K_SECONDS(10));
     }
-
-
 }
 
 void error()
