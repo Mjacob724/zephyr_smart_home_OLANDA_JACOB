@@ -51,19 +51,16 @@ int main(void)
 
     // Configurez les broches
     gpio_pin_configure(button_gpio1.port, button_gpio1.pin, GPIO_INPUT );
-    gpio_pin_configure(button_gpio2.port, button_gpio1.pin, GPIO_INPUT );
-
+    //gpio_pin_configure(button_gpio2.port, button_gpio2.pin, GPIO_INPUT );
 
     // Configurez la gestion des interruptions
     gpio_init_callback(&button_cb, gpio_callback, BIT(button_gpio1.pin) );
-    gpio_init_callback(&button_cb, gpio_callback, BIT(button_gpio2.pin) );
-
     gpio_add_callback(button_gpio1.port, &button_cb);
 
     // Activez les interruptions
-    gpio_pin_interrupt_configure_dt(button_gpio1.port, button_gpio1.pin, GPIO_INT_EDGE_BOTH );
-    gpio_pin_interrupt_configure_dt(button_gpio2.port, button_gpio2.pin, GPIO_INT_EDGE_BOTH );
-  /
+    gpio_pin_interrupt_configure_dt(&button_gpio1, GPIO_INT_EDGE_BOTH);
+  //  gpio_pin_interrupt_configure(button_gpio2.port, button_gpio2.pin, GPIO_INT_EDGE | GPIO_ACTIVE_LOW);
+
 
     while (1)
     {
