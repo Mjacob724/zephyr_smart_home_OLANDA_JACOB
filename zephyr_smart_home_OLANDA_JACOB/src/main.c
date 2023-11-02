@@ -58,7 +58,7 @@ int main(void)
     gpio_pin_configure(gpio_dev, button_gpio2, GPIO_DIR_MASK | GPIO_INPUT | GPIO_PULL_UP | GPIO_INT_EDGE);
 
     // Configurez la gestion des interruptions
-    gpio_init_callback(&button_cb, gpio_callback, BIT(button_0) | BIT(button_1));
+    gpio_init_callback(&button_cb, gpio_callback, BIT(button_gpio1) | BIT(button_gpio2));
     gpio_add_callback(gpio_dev, &button_cb);
 
     // Activez les interruptions
