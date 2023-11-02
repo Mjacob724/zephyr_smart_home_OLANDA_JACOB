@@ -6,12 +6,15 @@
 
 #define BUZZER_PWM_CONTROLLER "PWM_0"
 #define BUZZER_PWM_CHANNEL 0
+#define BUZZER_NODE DT_ALIAS(buzzer)
+
+const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
 
 void init_buzzer_gpio(void)
 {
     const struct device *buzzer_dev;
 
-    buzzer_dev = device_get_binding("BUZZER_GPIO");
+    buzzer_dev = device_get_binding(BUZZER_NODE);
     if (!buzzer_dev) {
         printk("Buzzer GPIO non trouvé.\n");
         return;
