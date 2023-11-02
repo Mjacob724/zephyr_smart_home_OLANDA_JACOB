@@ -26,25 +26,28 @@
         led-yellow = &ledyellow;
         afficheur-lcd = &afficheur;
         capteur-temp = &dht11;
+        button = &buttons
     };
 };
 
-&i2c0 {
-	afficheur: afficheur_lcd@27 {
-		compatible = "i2c-device";
-		reg = <0x27>;
-	};
-};
-
-&buttons {
-        compatible = "gpio-keys";
-        button0: button_0 {
-                gpios = <&gpio0 16 GPIO_PUD_PULL_UP>;
-                label = "Normal call button";
+    &i2c0 {
+        afficheur: afficheur_lcd@27 {
+            compatible = "i2c-device";
+            reg = <0x27>;
         };
-        button1: button_1 {
-                gpios = <&gpio0 27 GPIO_PUD_PULL_UP>;
-                label = "Assistance call button";
-        };
+    };
 
-};
+    &buttons {
+            compatible = "gpio-keys";
+            button0: button_0
+            {
+                    gpios = <&gpio0 16 GPIO_PUD_PULL_UP>;
+                    label = "Button1";
+            };
+            button1: button_1
+            {
+                    gpios = <&gpio0 27 GPIO_PUD_PULL_UP>;
+                    label = "Button2";
+            };
+
+    };
