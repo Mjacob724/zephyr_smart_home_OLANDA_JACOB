@@ -35,3 +35,16 @@
 		reg = <0x27>;
 	};
 };
+
+&buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+                gpios = <&gpio0 16 GPIO_PUD_PULL_UP>;
+                label = "Normal call button";
+        };
+        button1: button_1 {
+                gpios = <&gpio0 27 GPIO_PUD_PULL_UP>;
+                label = "Assistance call button";
+        };
+
+};
