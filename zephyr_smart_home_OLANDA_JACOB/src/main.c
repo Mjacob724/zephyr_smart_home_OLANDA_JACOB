@@ -16,9 +16,8 @@
 #define BUTTON_NODE_2 DT_ALIAS(button2)
 #define BUZZER_NODE DT_ALIAS(buzzer)
 
-#define PERIOD_INIT 1000
-#define BEEP_DURATION  K_MSEC(10)
-#define PAUSE_DURATION  K_MSEC(1)
+#define MIN_PERIOD PWM_SEC(1U) / 128U
+#define MAX_PERIOD PWM_SEC(1U)
 
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
@@ -36,7 +35,6 @@ void error(void);
 
 void gpio_callback_1();
 void gpio_callback_2();
-void init_buzzer_gpio();
 
 int main(void)
 {
@@ -106,6 +104,56 @@ int main(void)
 
         k_sleep(K_SECONDS(10));
     }
+
+
+    uint32_t max_period;
+    uint32_t period;
+    uint8_t dir = 0U;
+    int ret;
+
+    printk("PWM-based blinky\n");
+
+    if (!pwm_is_ready_dt(&buzzer_gpio)) {
+        printk("Error: PWM device %s is not ready\n",
+               buzzer_gpio.dev->name);
+        return 0;
+    }
+
+    printk("Calibrating for channel %d...\n", buzzer_gpio.channel);
+    max_period = MAX_PERIOD;
+
+    while (pwm_set_dt(&buzzer_gpio, max_period, max_period / 2U))
+    {
+        max_period /= 2U;
+        if (max_period < (4U * MIN_PERIOD)) {
+            printk("Error: PWM device ",4U * MIN_PERIOD);
+            return 0;
+        }
+    }
+
+    printk("Done calibrating; maximum/minimum periods %u/%lu nsec\n",
+           max_period, MIN_PERIOD);
+
+    period = max_period;
+    while (1) {
+        ret = pwm_set_dt(&buzzer_gpio, period, period / 2U);
+        if (ret) {
+            printk("Error %d: failed to set pulse width\n", ret);
+            return 0;
+        }
+
+        period = dir ? (period * 2U) : (period / 2U);
+        if (period > max_period) {
+            period = max_period / 2U;
+            dir = 0U;
+        } else if (period < MIN_PERIOD) {
+            period = MIN_PERIOD * 2U;
+            dir = 1U;
+        }
+
+        k_sleep(K_SECONDS(4U));
+    }
+    return 0;
 }
 
 void error()
@@ -126,25 +174,5 @@ void gpio_callback_2()
     printk("Bouton 2 appuyé\n");
 }
 
-
-void init_buzzer_gpio()
-{
-    const struct device *buzzer_dev;
-
-    buzzer_dev = device_get_binding(BUZZER_NODE);
-    if (!buzzer_dev)
-    {
-        printk("Buzzer GPIO non trouvé.\n");
-        return;
-    }
-
-    else
-    {
-        const struct pwm_dt_spec pwm;
-        pwm = PWM_DT_SPEC_INST_GET_BY_NAME(n, alpha);
-
-        return ;
-    }
-}
 
 K_THREAD_DEFINE(compute_thread_id,521, compute_thread, NULL, NULL, NULL, 9, 0, 0);
