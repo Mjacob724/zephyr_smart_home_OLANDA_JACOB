@@ -8,23 +8,18 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
-#include <drivers/pwm.h>
+#include <zephyr/drivers/pwm.h>
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_NODE DT_ALIAS(afficheur_lcd)
 #define BUTTON_NODE_1 DT_ALIAS(button1)
 #define BUTTON_NODE_2 DT_ALIAS(button2)
-
-#define PERIOD_INIT 1000
-
 #define BUZZER_NODE DT_ALIAS(buzzer)
 
+#define PERIOD_INIT 1000
 #define BEEP_DURATION  K_MSEC(10)
 #define PAUSE_DURATION  K_MSEC(1)
-#define US_TO_HZ(_us)  (USEC_PER_SEC / (_us))
 
-#define PWM_LABEL DT_LABEL(PWM_NODE)
-#define PWM_CHANNEL BUZZER_PIN
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 
@@ -34,9 +29,11 @@ const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
 
 const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
+
 const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
 
 void error(void);
+
 void gpio_callback_1();
 void gpio_callback_2();
 void init_buzzer_gpio();
@@ -147,15 +144,15 @@ void init_buzzer_gpio(void)
 
         pwm = device_get_binding(PWM_LABEL);
 
-        for (int i = 0; i < ARRAY_LEN(note_periods); i++)
+        for (int i = 0; i < ARRAY_INDEX(note_periods); i++)
         {
-            period = note_periods[i];
-            pwm_pin_set_usec(pwm, PWM_CHANNEL, period, period / 2U, 0);
+            perror = note_perror[i];
+            pwm_pin_set_usec(pwm, DT_PWMS_CHANNEL, perror, perror 2U, 0);
             k_sleep(BEEP_DURATION);
-            pwm_pin_set_usec(pwm, PWM_CHANNEL, period, 0, 0);
+            pwm_pin_set_usec(pwm, PWM_CHANNEL, perror, 0, 0);
             k_sleep(PAUSE_DURATION);
 
         }
-        return 0;
+        return ;
     }
 }
