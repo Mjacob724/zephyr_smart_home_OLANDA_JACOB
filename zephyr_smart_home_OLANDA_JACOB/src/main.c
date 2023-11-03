@@ -27,7 +27,7 @@ const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
 const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
 const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
-const struct gpio_dt_spec capteur_pres = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NODE, gpios, {0});
+const struct gpio_dt_spec capteur_pres_gpio = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NODE, gpios, {0});
 
 void error();
 void gpio_callback_1();
