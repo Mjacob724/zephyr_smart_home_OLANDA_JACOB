@@ -44,12 +44,12 @@
             };
     };
 
-    capteurpres: capteurpres{
-
-            compatible = "aosong,dht";
-            status = "okay";
-            dio-gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
-            label = "Capteur Presence";
+    pir {
+        compatible = "gpio-keys";
+        motionsensor: motion_sensor {
+        gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+        label = "motion-sensor";
+        };
     };
 
     aliases
@@ -60,7 +60,7 @@
         button1 = &button0;
         button2 = &button1;
         buzzer = &buzzer;
-        capteur-presence = &capteurpres;
+        motion-sensor = &motionsensor;
     };
 };
 
