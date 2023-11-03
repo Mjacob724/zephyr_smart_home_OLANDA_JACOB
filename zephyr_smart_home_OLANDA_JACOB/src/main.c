@@ -15,24 +15,21 @@
 #define BUTTON_NODE_1 DT_ALIAS(button1)
 #define BUTTON_NODE_2 DT_ALIAS(button2)
 #define BUZZER_NODE DT_ALIAS(buzzer)
+#define CAPTEURPRES_NODE DT_ALIAS(capteur_presence)
 
 #define MIN_PERIOD PWM_SEC(1U) / 128U
 #define MAX_PERIOD PWM_SEC(1U)
 
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
-
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
-
 const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
-
 const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
-
 const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
+const struct gpio_dt_spec capteur_pres = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NODE, gpios, {0});
 
-void error(void);
-
+void error();
 void gpio_callback_1();
 void gpio_callback_2();
 
