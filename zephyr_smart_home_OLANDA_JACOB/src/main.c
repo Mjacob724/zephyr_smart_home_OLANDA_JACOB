@@ -172,4 +172,4 @@ void gpio_callback_2()
 }
 
 
-K_THREAD_DEFINE(compute_thread_id,521, compute_thread, NULL, NULL, NULL, 9, 0, 0);
+//K_THREAD_DEFINE(compute_thread_id,521, compute_thread, NULL, NULL, NULL, 9, 0, 0);

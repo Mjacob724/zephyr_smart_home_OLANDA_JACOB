@@ -28,12 +28,6 @@
         };
     };
 
-    n: node
-    {
-        pwms = <&pwm1 1 1000 PWM_POLARITY_NORMAL>,
-               <&pwm2 3 2000 PWM_POLARITY_INVERTED>;
-        pwm-names = "alpha", "beta";
-    };
 
     buttons: buttons
     {
@@ -51,20 +45,22 @@
     };
 
     capteurpres: capteurpres{
+
             compatible = "aosong,dht";
             status = "okay";
             dio-gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
             label = "Capteur Presence";
-    }
+    };
 
-    aliases {
+    aliases
+    {
         led-yellow = &ledyellow;
         afficheur-lcd = &afficheur;
         capteur-temp = &dht11;
         button1 = &button0;
         button2 = &button1;
         buzzer = &buzzer;
-        capteur-presence = &capteurspres;
+        capteur-presence = &capteurpres;
     };
 };
 
