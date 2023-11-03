@@ -71,3 +71,7 @@
             reg = <0x27>;
         };
 };
+
+&wifi{
+    status = "okay";
+};
