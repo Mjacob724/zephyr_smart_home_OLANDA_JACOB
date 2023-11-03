@@ -127,7 +127,7 @@ void gpio_callback_2()
 }
 
 
-void init_buzzer_gpio(void)
+void init_buzzer_gpio()
 {
     const struct device *buzzer_dev;
 
@@ -140,19 +140,11 @@ void init_buzzer_gpio(void)
 
     else
     {
-        const struct device *pwm;
+        const struct pwm_dt_spec pwm;
+        pwm = PWM_DT_SPEC_INST_GET_BY_NAME(n, alpha);
 
-        pwm = device_get_binding(PWM_LABEL);
-
-        for (int i = 0; i < ARRAY_INDEX(note_periods); i++)
-        {
-            perror = note_perror[i];
-            pwm_pin_set_usec(pwm, DT_PWMS_CHANNEL, perror, perror 2U, 0);
-            k_sleep(BEEP_DURATION);
-            pwm_pin_set_usec(pwm, PWM_CHANNEL, perror, 0, 0);
-            k_sleep(PAUSE_DURATION);
-
-        }
         return ;
     }
 }
+
+K_THREAD_DEFINE(compute_thread_id,521, compute_thread, NULL, NULL, NULL, 9, 0, 0);
