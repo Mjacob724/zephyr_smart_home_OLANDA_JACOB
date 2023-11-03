@@ -17,9 +17,6 @@
 #define BUZZER_NODE DT_ALIAS(buzzer)
 #define CAPTEURPRES_NODE DT_ALIAS(capteur_presence)
 
-#define MIN_PERIOD PWM_SEC(1U) / 128U
-#define MAX_PERIOD PWM_SEC(1U)
-
 
 const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
@@ -65,12 +62,18 @@ int main(void)
     gpio_add_callback(button_gpio2.port, &button_2);
     gpio_pin_interrupt_configure_dt(&button_gpio2, GPIO_INT_EDGE_BOTH);
 
-    k_sleep(K_MSEC(1));
-    gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
-    k_sleep(K_MSEC(1));
-    gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
-    k_sleep(K_MSEC(1));
-    printk("Le buzzer est activé\n");
+    int i;
+
+    for (i=0 ; i<10; i++)
+    {
+        k_sleep(K_MSEC(1));
+        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
+        k_sleep(K_MSEC(1));
+        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
+        k_sleep(K_MSEC(1));
+        printk("Le buzzer est activé\n");
+    }
+
 
     while (1) {
         struct sensor_value temp, humidity, press;
