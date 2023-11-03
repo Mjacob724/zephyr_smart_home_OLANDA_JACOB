@@ -1,5 +1,5 @@
 //
-// Created by seatech on 25/10/23.
+// Created by seatech on 03/11/23.
 //
 
 #include <zephyr/kernel.h>
@@ -17,114 +17,72 @@
 #define BUZZER_NODE DT_ALIAS(buzzer)
 #define CAPTEURPRES_NODE DT_ALIAS(capteur_presence)
 
-
-const struct gpio_dt_spec led_yellow_gpio = GPIO_DT_SPEC_GET_OR(LED_YELLOW_NODE, gpios, {0});
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
-const struct device *const dht11 = DEVICE_DT_GET_ONE(aosong_dht);
 const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
 const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
 const struct gpio_dt_spec capteur_pres_gpio = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NODE, gpios, {0});
 
-void error();
-void gpio_callback_1();
-void gpio_callback_2();
+void alarm_ON_thread()
+void alarm_OFF_thread()
+        void error();
+        void boutton_callback_1();
+        void boutton_callback_2();
 
+#define MIN_PERIOD PWM_SEC(1U) / 128U
+#define MAX_PERIOD PWM_SEC(1U)
 
-int main(void)
-{
-    gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
-    // Init device
-    init_lcd(&dev_lcd_screen);
-
-    // Display a message
-    write_lcd(&dev_lcd_screen, HELLO_MSG, LCD_LINE_1);
-    write_lcd(&dev_lcd_screen, ZEPHYR_MSG, LCD_LINE_2);
-
-    if (!dht11) {
-        error();
-    }
-
-    struct gpio_callback button_1;
-    struct gpio_callback button_2;
-
-    // Configurez les broches
-    gpio_pin_configure(button_gpio1.port, button_gpio1.pin, GPIO_INPUT);
-    // Configurez la gestion des interruptions
-    gpio_init_callback(&button_1, gpio_callback_1, BIT(button_gpio1.pin));
+        int main(void) {
+    gpio_pin_configure(button_gpio1.port, button_gpio1.pin, GPIO_INPUT );
+    gpio_init_callback(&button_1, boutton_callback_1, BIT(button_gpio1.pin) );
     gpio_add_callback(button_gpio1.port, &button_1);
-    // Activez les interruptions
     gpio_pin_interrupt_configure_dt(&button_gpio1, GPIO_INT_EDGE_BOTH);
 
-
-    gpio_pin_configure(button_gpio2.port, button_gpio2.pin, GPIO_INPUT);
-    gpio_init_callback(&button_2, gpio_callback_2, BIT(button_gpio2.pin));
+    gpio_pin_configure(button_gpio2.port, button_gpio2.pin, GPIO_INPUT );
+    gpio_init_callback(&button_2, boutton_callback_2, BIT(button_gpio2.pin) );
     gpio_add_callback(button_gpio2.port, &button_2);
     gpio_pin_interrupt_configure_dt(&button_gpio2, GPIO_INT_EDGE_BOTH);
 
-    int i;
+    init_lcd(&dev_lcd_screen);
+    write_lcd(&dev_lcd_screen, "ALARM MODE :", LCD_LINE_1);
+}
 
-    for (i=0 ; i<10; i++)
-    {
+void alarm_ON_thread(){
+    k_thread_suspend(alarm_ON_thread_id);
+    while(1){
+        gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
         k_sleep(K_MSEC(1));
         gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
         k_sleep(K_MSEC(1));
         gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
         k_sleep(K_MSEC(1));
-        printk("Le buzzer est activé\n");
+        k_sleep(1);
     }
-
-
-    while (1) {
-        struct sensor_value temp, humidity, press;
-
-        if (sensor_sample_fetch(dht11) < 0) {
-            printk("Échec de l'échantillonnage du capteur DTH11\n");
-        }
-
-        if (sensor_channel_get(dht11, SENSOR_CHAN_AMBIENT_TEMP, &temp) < 0) {
-            printk("Échec de récupération de la température\n");
-        }
-
-        if (sensor_channel_get(dht11, SENSOR_CHAN_HUMIDITY, &humidity) < 0) {
-            printk("Échec de récupération de l'humidité\n");
-        }
-
-        if (sensor_channel_get(dht11, SENSOR_CHAN_PRESS, &press) < 0) {
-            printk("Échec de récupération de la pression\n");
-        }
-
-        sensor_sample_fetch(dht11);
-        sensor_channel_get(dht11, SENSOR_CHAN_AMBIENT_TEMP, &temp);
-        sensor_channel_get(dht11, SENSOR_CHAN_HUMIDITY, &humidity);
-        sensor_channel_get(dht11, SENSOR_CHAN_PRESS, &press);
-
-        printk("temp: %d.%06d; press: %d.%06d; humidity: %d.%06d\n",
-               temp.val1, temp.val2, press.val1, press.val2,
-               humidity.val1, humidity.val2);
-
-        k_sleep(K_SECONDS(10));
+}
+void alarm_OFF_thread(){
+    k_thread_suspend(alarm_OFF_thread_id);
+    while(1){
+        k_sleep(1);
     }
+}
 
+void boutton_callback_1()
+{
+    write_lcd(&dev_lcd_screen, "ON ", LCD_LINE_2);
+    k_thread_suspend(alarm_OFF_thread_id);
+    k_thread_resume(alarm_ON_thread_id);
+}
 
+void boutton_callback_2()
+{
+    write_lcd(&dev_lcd_screen, "OFF", LCD_LINE_2);
+    k_thread_suspend(alarm_ON_thread_id);
+    k_thread_resume(alarm_OFF_thread_id);
 }
 
 void error()
 {
-    while(1)
-    {
-        printk("Capteur DTH11 non trouvé.\n");
-    }
 }
 
-void gpio_callback_1()
-{
-    printk("Bouton 1 appuyé\n");
-}
-
-void gpio_callback_2()
-{
-    printk("Bouton 2 appuyé\n");
-}
-
-
+K_THREAD_DEFINE(alarm_ON_thread_id,521, alarm_ON_thread, NULL, NULL, NULL, 9, 0, 0);
+K_THREAD_DEFINE(alarm_OFF_thread_id,521, alarm_OFF_thread, NULL, NULL, NULL, 9, 0, 0);

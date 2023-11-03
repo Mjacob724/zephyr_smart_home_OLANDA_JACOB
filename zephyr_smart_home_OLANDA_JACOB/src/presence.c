@@ -2,6 +2,21 @@
 // Created by seatech on 03/11/23.
 //
 
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
+#include "../inc/lcd_screen_i2c.h"
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/pwm.h>
+
+#define LED_YELLOW_NODE DT_ALIAS(led_yellow)
+#define LCD_NODE DT_ALIAS(afficheur_lcd)
+#define BUTTON_NODE_1 DT_ALIAS(button1)
+#define BUTTON_NODE_2 DT_ALIAS(button2)
+#define BUZZER_NODE DT_ALIAS(buzzer)
+#define CAPTEURPRES_NODE DT_ALIAS(capteur_presence)
+
 const struct i2c_dt_spec dev_lcd_screen = I2C_DT_SPEC_GET(LCD_NODE);
 const struct gpio_dt_spec button_gpio1 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_1, gpios, {0});
 const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpios, {0});
@@ -13,6 +28,9 @@ void alarm_OFF_thread()
 void error();
 void boutton_callback_1();
 void boutton_callback_2();
+
+#define MIN_PERIOD PWM_SEC(1U) / 128U
+#define MAX_PERIOD PWM_SEC(1U)
 
 int main(void) {
     gpio_pin_configure(button_gpio1.port, button_gpio1.pin, GPIO_INPUT );
@@ -32,18 +50,19 @@ int main(void) {
 void alarm_ON_thread(){
     k_thread_suspend(alarm_ON_thread_id);
     while(1){
-        int presence = gpio_pin_get(capteur_pres_gpio.port, capteur_pres_gpio.pin);
         gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
-        if (presence == 1){
-            // TODO : add buzzer
-        }
-        sleep(1);
+        k_sleep(K_MSEC(1));
+        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
+        k_sleep(K_MSEC(1));
+        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
+        k_sleep(K_MSEC(1));
+        k_sleep(1);
     }
 }
 void alarm_OFF_thread(){
     k_thread_suspend(alarm_OFF_thread_id);
     while(1){
-        sleep(1);
+        k_sleep(1);
     }
 }
 
