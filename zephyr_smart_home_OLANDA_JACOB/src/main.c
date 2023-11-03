@@ -32,6 +32,7 @@ const struct gpio_dt_spec capteur_pres_gpio = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NO
 void error();
 void gpio_callback_1();
 void gpio_callback_2();
+void buzzer_thread()
 
 int main(void)
 {
@@ -112,17 +113,18 @@ int main(void)
 
     if (!pwm_is_ready_dt(&buzzer_gpio)) {
         printk("Error: PWM device %s is not ready\n",
-               buzzer_gpio.dev->name);
+               buzzer_gpio.port->name);
         return 0;
     }
 
-    printk("Calibrating for channel %d...\n", buzzer_gpio.channel);
+    //printk("Calibrating for channel %d...\n", buzzer_gpio.channel);
     max_period = MAX_PERIOD;
 
     while (pwm_set_dt(&buzzer_gpio, max_period, max_period / 2U))
     {
         max_period /= 2U;
-        if (max_period < (4U * MIN_PERIOD)) {
+        if (max_period < (4U * MIN_PERIOD))
+        {
             printk("Error: PWM device ",4U * MIN_PERIOD);
             return 0;
         }
@@ -132,25 +134,8 @@ int main(void)
            max_period, MIN_PERIOD);
 
     period = max_period;
-    while (1) {
-        ret = pwm_set_dt(&buzzer_gpio, period, period / 2U);
-        if (ret) {
-            printk("Error %d: failed to set pulse width\n", ret);
-            return 0;
-        }
 
-        period = dir ? (period * 2U) : (period / 2U);
-        if (period > max_period) {
-            period = max_period / 2U;
-            dir = 0U;
-        } else if (period < MIN_PERIOD) {
-            period = MIN_PERIOD * 2U;
-            dir = 1U;
-        }
-
-        k_sleep(K_SECONDS(4U));
-    }
-    return 0;
+    void buzzer_thread()
 }
 
 void error()
@@ -171,5 +156,31 @@ void gpio_callback_2()
     printk("Bouton 2 appuyé\n");
 }
 
+void buzzer_thread()
+{
+    while ()
+    {
+        ret = pwm_set_dt(&buzzer_gpio, period, period / 2U);
+        if (ret)
+        {
+            printk("Error %d: failed to set pulse width\n", ret);
+            return 0;
+        }
 
+        period = dir ? (period * 2U) : (period / 2U);
+        if (period > max_period)
+        {
+            period = max_period / 2U;
+            dir = 0U;
+        }
+        else if (period < MIN_PERIOD)
+        {
+            period = MIN_PERIOD * 2U;
+            dir = 1U;
+        }
+
+        k_sleep(K_SECONDS(4U));
+    }
+    return 0;
+}
 //K_THREAD_DEFINE(compute_thread_id,521, compute_thread, NULL, NULL, NULL, 9, 0, 0);

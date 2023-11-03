@@ -21,7 +21,7 @@
 
     buzzer
     {
-        compatible = "gpio-buzzers";
+        compatible = "gpio-keys";
         buzzer: buzzer{
             gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
             label = "BUZZER";
