@@ -24,8 +24,9 @@ const struct gpio_dt_spec button_gpio2 = GPIO_DT_SPEC_GET_OR(BUTTON_NODE_2, gpio
 const struct gpio_dt_spec buzzer_gpio = GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, {0});
 const struct gpio_dt_spec capteur_pres_gpio = GPIO_DT_SPEC_GET_OR(CAPTEURPRES_NODE, gpios, {0});
 
-void alarm_ON_thread();
-void alarm_OFF_thread();
+int flag = 0;
+
+void alarm_thread();
 void error();
 void gpio_callback_1();
 void gpio_callback_2();
@@ -60,34 +61,25 @@ int main(void) {
     }
 }
 
-K_THREAD_DEFINE(alarm_ON_thread_id, 521, alarm_ON_thread, NULL, NULL, NULL, -2, 0, 0);
-K_THREAD_DEFINE(alarm_OFF_thread_id, 521, alarm_OFF_thread, NULL, NULL, NULL, -2, 0, 0);
-//volatile k_tid_t test = alarm_ON_thread_id ;
-//volatile k_tid_t test2 = alarm_OFF_thread_id ;
+K_THREAD_DEFINE(alarm_thread_id, 521, alarm_thread, NULL, NULL, NULL, 9, 0, 0);
 
-void alarm_ON_thread(){
-    k_thread_suspend(alarm_ON_thread_id);
+void alarm_thread(){
+    k_thread_suspend(alarm_thread_id);
     while(1){
-        write_lcd(&dev_lcd_screen, "ON ", LCD_LINE_2);
-        gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
-        k_sleep(K_MSEC(1));
-        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
-        k_sleep(K_MSEC(1));
-        gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
-        k_sleep(K_MSEC(1));
-
-        k_sleep(K_SECONDS(1));
-    }
-}
-void alarm_OFF_thread()
-{
-    printk("starting");
-    k_thread_suspend(alarm_OFF_thread_id);
-    while(1){
-        printk("OFF");
-        write_lcd(&dev_lcd_screen, "OFF", LCD_LINE_2);
-        gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_LOW);
-
+        if(flag == 1) {
+            write_lcd(&dev_lcd_screen, "ON           ", LCD_LINE_2);
+            gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
+            for(int i=0; i<200; i++) {
+                k_sleep(K_MSEC(1));
+                gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_LOW);
+                k_sleep(K_MSEC(1));
+                gpio_pin_configure_dt(&buzzer_gpio, GPIO_OUTPUT_HIGH);
+            }
+        }
+        else{
+            write_lcd(&dev_lcd_screen, "OFF          ", LCD_LINE_2);
+            gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_LOW);
+        }
         k_sleep(K_SECONDS(1));
     }
 }
@@ -95,15 +87,14 @@ void alarm_OFF_thread()
 void gpio_callback_1()
 {
     printk("Bouton 1 appuyé\n");
-    k_thread_suspend(alarm_OFF_thread_id);
-    k_thread_resume(alarm_ON_thread_id);
+    flag = 1;
+    k_thread_resume(alarm_thread_id);
 }
 
 void gpio_callback_2()
 {
+    flag = 0;
     printk("Bouton 2 appuyé\n");
-    k_thread_suspend(alarm_ON_thread_id);
-    k_thread_resume(alarm_OFF_thread_id);
 }
 
 void error()
